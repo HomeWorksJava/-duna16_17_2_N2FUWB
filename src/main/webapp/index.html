@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>Fegyver Nyilvántartás</h1>
+        
+        <h2> Fegyver felvitel </h2>
+        <form action="rest/weapons/hozzaad" method="POST">
+            <label for="gyarto">Gyártó</label>
+            <input type="text" id="gyarto" name="gyarto" placeholder="Gyártó">
+            <label for="kaliber">Kaliber</label>
+            <input type="text" id="kaliber" name="kaliber" placeholder="Kaliber">
+            <label for="tipus">Típus</label>
+            <input type="text" id="tipus" name="tipus" placeholder="Típus">
+            <label for="tar">Tár</label>
+            <input type="text" id="tar" name="tar" placeholder="Tár">
+            
+            <button type="submit">Hozzáad</button>
+        </form>
+        <hr>
+        
+        <h2> Fegyver választás </h2>
+        
+        <select id="fegyverek" onchange="fegyverBetolt()">            
+        </select>        
+        <hr>
+       <div id="adatok" style="visibility:hidden;">
+        
+        <table>
+            <thead>
+                <th>ID</th>
+                <th>Gyártó</th>
+                <th>Kaliber</th>
+                <th>Típus</th>
+                <th>Tár</th>
+            </thead>
+            <tbody id="weaponById">
+            
+            </tbody>
+        </table>
+        
+        
+        
+        </div>
+        
+        <script>
+                 
+              loadLists("http://localhost:8080/FegyverAPI/rest/weapons/osszes","fegyverek","tipus");
+              
+     function fegyverBetolt(){
+        var xmlHttp = new XMLHttpRequest();
+                 xmlHttp.open("GET", "http://localhost:8080/FegyverAPI/rest/weapons/weapons/" + document.getElementById("fegyverek").value , true);
+                 xmlHttp.setRequestHeader("Content-Type","application/json");
+                 xmlHttp.responseType = "json";
+                 xmlHttp.onload = function()
+                 {
+                    var tbody = document.getElementById("weaponById");
+                        tbody.innerHTML = "";
+                    document.getElementById("adatok").style.visibility = "visible";
+                    
+                    console.log(xmlHttp.response);
+                    
+                 
+                    var tr = document.createElement("tr");
+                    
+                        var td = document.createElement("td");
+                            td.innerHTML = xmlHttp.response.id;
+                        
+                        var td2 = document.createElement("td");
+                            td2.innerHTML = xmlHttp.response.gyarto;
+                            
+                        var td3 = document.createElement("td");
+                            td3.innerHTML = xmlHttp.response.kaliber;
+                            
+                        var td4 = document.createElement("td");
+                            td4.innerHTML = xmlHttp.response.tipus;
+                            
+                        var td5 = document.createElement("td");
+                            td5.innerHTML = xmlHttp.response.tar;
+                        
+                    tr.appendChild(td);
+                    tr.appendChild(td2);
+                    tr.appendChild(td3);
+                    tr.appendChild(td4);
+                    tr.appendChild(td5);
+                  
+                  tbody.appendChild(tr);
+                  
+                  
+                 };                 
+                 xmlHttp.send();
+    }    
+                
+            function loadLists(url, id, tulajdonsag){
+                var xmlHttp = new XMLHttpRequest();
+                 xmlHttp.open("GET", url , true);
+                 xmlHttp.setRequestHeader("Content-Type","application/json");
+                 xmlHttp.responseType = "json";
+    
+                 xmlHttp.onload = function()
+                 {
+                  var selectedList = document.getElementById(id);            
+              
+                  for(var x in xmlHttp.response)
+                  {
+                     var option = document.createElement("option");                    
+                     option.text = xmlHttp.response[x][tulajdonsag];                                         
+                     option.value = xmlHttp.response[x].id;
+                     selectedList.appendChild(option);
+                  }
+                 };                 
+                 xmlHttp.send();
+            }
+                  
+                 
+                
+                           
+             
+        </script>
+    </body>
+</html>
